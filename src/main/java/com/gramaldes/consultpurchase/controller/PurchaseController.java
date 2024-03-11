@@ -29,7 +29,7 @@ public class PurchaseController {
         return purchaseService.save(purchase);
     }
 
-    @GetMapping("/id={id}&currency={currency}")
+    @GetMapping("/consult/{id}/{currency}")
     @ResponseStatus(HttpStatus.OK)
     @Validated
     public PurchaseDTO findPurchaseById(@RequestParam("id") UUID id, @RequestParam("currency") String currency) throws Exception {
