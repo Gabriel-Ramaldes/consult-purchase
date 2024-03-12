@@ -47,8 +47,7 @@ class ConsultPurchaseApplicationTests {
         Purchase mockedPurchase = new Purchase(UUID.randomUUID(), "Test 1", LocalDate.now(), BigDecimal.valueOf(100.80));
         mockedPurchase = purchaseService.save(mockedPurchase);
         PurchaseDTO testPurchaseDTO = purchaseService.findConvertedPurchaseById(mockedPurchase.getId(), "Euro Zone-Euro");
-        BigDecimal checkConvertedAmount = (BigDecimal.valueOf(100.80).multiply(testPurchaseDTO.getExchangeRate()))
-                .setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal checkConvertedAmount = (BigDecimal.valueOf(100.80).multiply(testPurchaseDTO.getExchangeRate())).setScale(2, RoundingMode.HALF_EVEN);
 
         Assert.isTrue(testPurchaseDTO.getConvertedAmount().equals(checkConvertedAmount), "The values are different.");
     }
@@ -56,26 +55,20 @@ class ConsultPurchaseApplicationTests {
     @Test
     @DisplayName("Should thrown an Exception when consulting the database with an unused id")
     void failOnConsultPurchaseNotStored() throws PurchaseNotFoundException {
-        Exception thrown = org.junit.jupiter.api.Assertions.assertThrows(PurchaseNotFoundException.class, () -> {
-            purchaseService.findConvertedPurchaseById(UUID.randomUUID(), "Euro Zone-Euro");
-        });
+        Exception thrown = org.junit.jupiter.api.Assertions.assertThrows(PurchaseNotFoundException.class, () -> purchaseService.findConvertedPurchaseById(UUID.randomUUID(), "Euro Zone-Euro"));
         assertEquals("Purchase not found", thrown.getMessage());
     }
 
     @Test
     @DisplayName("Should thrown Exception when there's no valid rate of exchange in the last 6 months or a wrong currency is used")
     void failOnConsultPurchaseOnWrongCurrency() throws EmptyRatesException {
-        Exception thrown = org.junit.jupiter.api.Assertions.assertThrows(EmptyRatesException.class, () -> {
-            purchaseService.getLatestExchangeRate("test", LocalDate.now());
-        });
-        assertEquals(
-                "No valid exchange rate available in the last 6 months for the specified currency: " +
-                        "test and date " + LocalDate.now(), thrown.getMessage());
+        Exception thrown = org.junit.jupiter.api.Assertions.assertThrows(EmptyRatesException.class, () -> purchaseService.getLatestExchangeRate("test", LocalDate.now()));
+        assertEquals("No valid exchange rate available in the last 6 months for the specified currency: " + "test and date " + LocalDate.now(), thrown.getMessage());
     }
 
     @Test
     @DisplayName("Should successfully save a new purchase and persist it in the database")
-    void successfullSavePurchaseCase() throws Exception {
+    void successfullSavePurchaseCase() {
         Purchase validEntity = new Purchase();
         validEntity.setAmount(BigDecimal.valueOf(225.46));
         validEntity.setDate(LocalDate.now());
@@ -89,35 +82,29 @@ class ConsultPurchaseApplicationTests {
     @DisplayName("Should not save a purchase transactions with invalid fields")
     void failedSavePurchaseCase() {
         Purchase invalidEntity = new Purchase(UUID.randomUUID(), "Test 1", LocalDate.now(), BigDecimal.valueOf(0.00));
-        Exception thrown = org.junit.jupiter.api.Assertions.assertThrows(ConstraintViolationException.class,
-                () -> purchaseService.save(invalidEntity));
-        assertEquals("save.purchase.amount: Minimum value is U$0.01",
-                thrown.getMessage());
+        Exception thrown = org.junit.jupiter.api.Assertions.assertThrows(ConstraintViolationException.class, () -> purchaseService.save(invalidEntity));
+        assertEquals("save.purchase.amount: Minimum value is U$0.01", thrown.getMessage());
     }
 
-	@Test
-	@DisplayName("Should successfully consult 5 purchases saved in the same day")
-	void successfullFindPurchasesByDate() {
-		List<Purchase> tests = new ArrayList<>();
-		int count = 0;
-		while(count < 5) {
-			val testEntity = new Purchase();
-			testEntity.setAmount(BigDecimal.valueOf(225.46));
-			testEntity.setDate(LocalDate.now());
-			testEntity.setDesc("Test " + count);
-			tests.add(testEntity);
-			count++;
-		}
-		tests.forEach(purchase -> {
-			purchaseService.save(purchase);
-		});
+    @Test
+    @DisplayName("Should successfully consult 5 purchases saved in the same day")
+    void successfullFindPurchasesByDate() {
+        List<Purchase> tests = new ArrayList<>();
+        int count = 0;
+        while (count < 5) {
+            val testEntity = new Purchase();
+            testEntity.setAmount(BigDecimal.valueOf(225.46));
+            testEntity.setDate(LocalDate.now());
+            testEntity.setDesc("Test " + count);
+            tests.add(testEntity);
+            count++;
+        }
+        tests.forEach(purchase -> purchaseService.save(purchase));
         tests = purchaseService.findAllByDateOrderById(Pageable.ofSize(5), LocalDate.now());
 
-		Assert.isTrue(tests.size() == 5, "One or more purchases were not found, check the find by date function.");
-		tests.forEach(purchase -> {
-		  Assert.isTrue(Objects.equals(purchase.getDate(), LocalDate.now()), "One of the dates didn't match the test!");
-		});
-	}
+        Assert.isTrue(tests.size() == 5, "One or more purchases were not found, check the find by date function.");
+        tests.forEach(purchase -> Assert.isTrue(Objects.equals(purchase.getDate(), LocalDate.now()), "One of the dates didn't match the test!"));
+    }
 
 
 }
