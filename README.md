@@ -19,6 +19,8 @@ The Entities and DTOs are located in the Model directory.
 The H2 memory database was used as a prerequisite as the application must be fully functional without installing
 separate databases, web servers, servlets or containers.
 
+## Getting started:
+
 ### Pre-requisites:
 
 There are some prerequisites to be validated before using the application, 
@@ -33,12 +35,12 @@ purchase in the database or by checking the database purchase table in the h2 co
 
 	URL : /purchase
 		  POST : Saves a purchase transaction, needs a Json object in the body. The required fields and their validations are documented in the code and in the challenge.
-            purchase/consult/{id}/{currency} 
-            GET : Consult a saved purchase transaction and convert the value to the desired currency, the default currency parameter is Country-Curreny (e.g.: Brazil-Real). 
+          /purchase/consult/{id}/{currency} 
+          GET : Consult a saved purchase transaction and convert the value to the desired currency, the default currency parameter is Country-Curreny (e.g.: Brazil-Real). 
 
 ### Running and Testing:
 
-You'll need JAVA JDK 17 in your machine to run this application.
+You'll need *JAVA JDK 17* in your machine to run this application.
 You can clone this project and then import it to your IDE and run it. 
 It is also possible to go to the project's root folder and use MAVEN to run these commands in the shell:
 

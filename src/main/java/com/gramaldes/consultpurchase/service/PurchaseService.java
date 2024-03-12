@@ -2,10 +2,10 @@ package com.gramaldes.consultpurchase.service;
 
 import com.gramaldes.consultpurchase.exception.EmptyRatesException;
 import com.gramaldes.consultpurchase.exception.PurchaseNotFoundException;
-import com.gramaldes.consultpurchase.model.DTO.TreasuryDTO.CurrencyExchangeRateDTO;
-import com.gramaldes.consultpurchase.model.Purchase;
 import com.gramaldes.consultpurchase.model.DTO.PurchaseDTO;
+import com.gramaldes.consultpurchase.model.DTO.TreasuryDTO.CurrencyExchangeRateDTO;
 import com.gramaldes.consultpurchase.model.DTO.TreasuryDTO.TreasuryResponseDTO;
+import com.gramaldes.consultpurchase.model.Purchase;
 import com.gramaldes.consultpurchase.repository.PurchaseRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -41,6 +43,7 @@ public class PurchaseService {
         return getConvertedPurchase(purchase, currency);
     }
 
+
     public PurchaseDTO getConvertedPurchase(Purchase purchase, String currency) throws ExecutionException, InterruptedException {
         CurrencyExchangeRateDTO currencyExchange = getLatestExchangeRate(currency, purchase.getDate());
         return new PurchaseDTO(purchase.getDesc(),
@@ -59,9 +62,9 @@ public class PurchaseService {
             throw new EmptyRatesException("No valid exchange rate available in the last 6 months for the specified currency: " +
                     currency + " and date " + date);
         }
-//        listRates.sort(Comparator.comparing(CurrencyExchangeRateDTO::getRecord_date).reversed());
         return listRates.get(0);
     }
+
 
     public BigDecimal roundToScale(BigDecimal value, Integer scale) {
         return value.setScale(scale, RoundingMode.HALF_EVEN);
