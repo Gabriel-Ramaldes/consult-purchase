@@ -2,8 +2,14 @@ package com.gramaldes.consultpurchase.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
-import lombok.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -23,7 +29,7 @@ public class Purchase implements Serializable {
     private UUID id;
 
     @Column(nullable = false, length = 50)
-    @Size(max=50, message = "Description must be at max 50 characters.")
+    @Size(max = 50, message = "Description must be at max 50 characters.")
     private String desc;
 
     @Column(nullable = false)

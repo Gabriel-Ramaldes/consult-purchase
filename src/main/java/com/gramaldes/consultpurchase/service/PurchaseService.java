@@ -9,6 +9,7 @@ import com.gramaldes.consultpurchase.model.Purchase;
 import com.gramaldes.consultpurchase.repository.PurchaseRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -37,6 +38,10 @@ public class PurchaseService {
         return purchaseRepository.save(purchase);
     }
 
+   public List<Purchase> findAllByDateOrderById(Pageable pageable, LocalDate date) {
+        return purchaseRepository.findAllByDateOrderById(date, pageable);
+   }
+
     public PurchaseDTO findConvertedPurchaseById(UUID id, String currency) throws Exception {
         Purchase purchase = purchaseRepository.findById(id)
                 .orElseThrow(() -> new PurchaseNotFoundException("Purchase not found"));
@@ -46,7 +51,9 @@ public class PurchaseService {
 
     public PurchaseDTO getConvertedPurchase(Purchase purchase, String currency) throws ExecutionException, InterruptedException {
         CurrencyExchangeRateDTO currencyExchange = getLatestExchangeRate(currency, purchase.getDate());
-        return new PurchaseDTO(purchase.getDesc(),
+        return new PurchaseDTO(
+                purchase.getId(),
+                purchase.getDesc(),
                 purchase.getDate(),
                 purchase.getAmount(),
                 currencyExchange.getExchange_rate(),

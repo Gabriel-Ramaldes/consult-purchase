@@ -6,19 +6,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.Assert;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest
 class TreasuryServiceTest {
 
     @Autowired
     TreasuryService treasuryService;
+
 
     @Test
     @DisplayName("Valid parameters should return a valid list of exchange rates sorted DESC by record_date")
@@ -27,8 +27,8 @@ class TreasuryServiceTest {
         String maxDate = LocalDate.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         TreasuryResponseDTO treasuryResponseDTO = treasuryService.getTreasuryResponse(maxDate, date, "Brazil-Real");
         List<CurrencyExchangeRateDTO> listRates = treasuryResponseDTO.getData();
-        assertThat(treasuryResponseDTO.getMeta().getCount() > 0);
-        assertThat(listRates.get(0).getRecord_date().isAfter(listRates.get(1).getRecord_date()));
+        Assert.isTrue(treasuryResponseDTO.getMeta().getCount() > 1, "There should be more than one valid result, check the API.");
+        Assert.isTrue(listRates.get(0).getRecord_date().isAfter(listRates.get(1).getRecord_date()), "The order is wrong, check the API to see if the results match the test.");
     }
 
     @Test
@@ -38,7 +38,7 @@ class TreasuryServiceTest {
         String maxDate = LocalDate.now().minusYears(1).toString();
         TreasuryResponseDTO treasuryResponseDTO = treasuryService.getTreasuryResponse(maxDate, date, "test");
         List<CurrencyExchangeRateDTO> listRates = treasuryResponseDTO.getData();
-        assertThat(treasuryResponseDTO.getMeta().getCount() == 0);
-        assertThat(listRates.isEmpty());
+        Assert.isTrue(treasuryResponseDTO.getMeta().getCount() == 0, "It shouldn't return any valid results, confirm the values in the API.");
+        Assert.isTrue(listRates.isEmpty(), "It shouldn't return any valid results, confirm the values in the API.");
     }
 }
